@@ -185,7 +185,6 @@
         
         .service-card:hover { transform: translateY(-8px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
         
-        /* صورة الخدمة بدل الأيقونة */
         .service-img {
             height: 190px;
             background: #f3ede5;
@@ -223,6 +222,7 @@
             height: 200px;
             box-shadow: var(--shadow);
             transition: 0.2s;
+            cursor: pointer;
         }
         
         .gallery-item img {
@@ -233,6 +233,35 @@
         }
         
         .gallery-item:hover img { transform: scale(1.05); }
+        
+        /* Lightbox */
+        .lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .lightbox.active { display: flex; }
+        .lightbox img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
+        .close-lightbox {
+            position: absolute;
+            top: 20px;
+            left: 30px;
+            color: white;
+            font-size: 40px;
+            cursor: pointer;
+        }
         
         /* Videos, testimonials, location etc */
         .videos, .testimonials, .faq, .location { padding: 70px 0; }
@@ -432,7 +461,7 @@
     </div>
 </section>
 
-<!-- Services مع صور محددة -->
+<!-- Services -->
 <section class="services" id="services">
     <div class="container">
         <div class="section-title"><h2>خدماتنا</h2></div>
@@ -440,13 +469,19 @@
     </div>
 </section>
 
-<!-- Gallery (صور من work1.jpg إلى work24.jpg) -->
+<!-- Gallery (43 صورة) -->
 <section class="gallery" id="gallery">
     <div class="container">
-        <div class="section-title"><h2>معرض أعمالنا</h2></div>
+        <div class="section-title"><h2>معرض أعمالنا (43 صورة)</h2></div>
         <div class="gallery-grid" id="galleryGrid"></div>
     </div>
 </section>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+    <span class="close-lightbox">&times;</span>
+    <img id="lightbox-img" src="" alt="تكبير الصورة">
+</div>
 
 <!-- Videos -->
 <section class="videos" id="videos">
@@ -454,15 +489,15 @@
         <div class="section-title"><h2>فيديوهات من أعمالنا</h2></div>
         <div class="videos-grid">
             <div class="video-item">
-                <iframe src="https://www.youtube.com/embed/embed/3Dq4yN8c7xM?si=placeholder" title="أعمال الدهانات" allowfullscreen></iframe>
+                <iframe src="https://www.youtube.com/embed/3Dq4yN8c7xM?si=placeholder" title="أعمال الدهانات" allowfullscreen></iframe>
                 <div class="video-caption">أعمال دهانات وديكورات داخلية</div>
             </div>
             <div class="video-item">
-                <iframe src="https://www.youtube.com/embed/embed/4E5rT9qLwA0?si=placeholder" title="أرضيات إيبوكسي" allowfullscreen></iframe>
+                <iframe src="https://www.youtube.com/embed/4E5rT9qLwA0?si=placeholder" title="أرضيات إيبوكسي" allowfullscreen></iframe>
                 <div class="video-caption">تركيب أرضيات إيبوكسي وورق جدران</div>
             </div>
             <div class="video-item">
-                <iframe src="https://www.youtube.com/embed/embed/9GkVhLhYzA0?si=placeholder" title="جبس بورد" allowfullscreen></iframe>
+                <iframe src="https://www.youtube.com/embed/9GkVhLhYzA0?si=placeholder" title="جبس بورد" allowfullscreen></iframe>
                 <div class="video-caption">جبس بورد وأسقف معلقة</div>
             </div>
         </div>
@@ -553,7 +588,7 @@
     </div>
 </footer>
 
-<!-- Floating buttons مع تحديث رقم الواتس -->
+<!-- Floating buttons -->
 <a href="https://wa.me/966532069489?text=مرحباً، أريد الاستفسار عن خدماتكم - دهانات الرياض" class="whatsapp-btn" target="_blank"><i class="fab fa-whatsapp"></i></a>
 <a href="tel:+966532069489" class="call-btn"><i class="fas fa-phone"></i></a>
 <div class="back-to-top"><i class="fas fa-arrow-up"></i></div>
@@ -569,7 +604,7 @@
     setInterval(updateDateTime, 1000);
     document.getElementById('current-year').textContent = new Date().getFullYear();
 
-    // قائمة الخدمات مع أسماء الصور المطلوبة (حسب اسماء الملفات)
+    // قائمة الخدمات مع الصور
     const servicesList = [
         { name: "دهانات داخلية وخارجية", img: "painting.jpg", desc: "أفضل جودة دهانات وألوان عصرية تناسب كل الأذواق." },
         { name: "أعمال الترميم", img: "renovation.jpg", desc: "ترميم شامل للمنازل والمكاتب بأحدث التقنيات." },
@@ -588,10 +623,9 @@
         servicesList.forEach(service => {
             const card = document.createElement('div');
             card.className = 'service-card';
-            // استخدام الصور المحددة من مجلد index.html
             card.innerHTML = `
                 <div class="service-img">
-                    <img src="${service.img}" alt="${service.name}" onerror="this.style.display='none'; this.parentNode.innerHTML+='<i class=\'fas fa-paint-roller\' style=\'font-size:48px; color:var(--primary-color);\'></i>'">
+                    <img src="${service.img}" alt="${service.name}" onerror="this.style.display='none'; this.parentNode.innerHTML+='<i class=\\'fas fa-paint-roller fallback-icon\\' style=\\'font-size:48px; color:var(--primary-color);\\'></i>'">
                 </div>
                 <div class="service-content">
                     <h3>${service.name}</h3>
@@ -601,37 +635,46 @@
             `;
             servicesGrid.appendChild(card);
         });
-        // إضافة fallback للصور المفقودة
-        document.querySelectorAll('.service-img img').forEach(img => {
-            img.addEventListener('error', function() {
-                if(!this.parentNode.querySelector('.fallback-icon')) {
-                    const icon = document.createElement('i');
-                    icon.className = 'fas fa-paint-roller fallback-icon';
-                    icon.style.fontSize = '48px';
-                    icon.style.color = 'var(--primary-color)';
-                    this.style.display = 'none';
-                    this.parentNode.style.justifyContent = 'center';
-                    this.parentNode.style.alignItems = 'center';
-                    this.parentNode.appendChild(icon);
-                }
-            });
-        });
     }
 
-    // معرض الصور: work1.jpg إلى work24.jpg (نفس مجلد index.html)
+    // معرض الصور: 43 صورة work1.jpg إلى work43.jpg
     const galleryGrid = document.getElementById('galleryGrid');
     if(galleryGrid) {
-        for(let i = 1; i <= 24; i++) {
+        for(let i = 1; i <= 43; i++) {
             const item = document.createElement('div');
             item.className = 'gallery-item';
             const img = document.createElement('img');
             img.src = `work${i}.jpg`;
             img.alt = `أعمالنا ${i}`;
-            img.onerror = function() { this.style.display = 'none'; this.parentNode.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;background:#e7d8c6;color:var(--primary-color);"><i class="fas fa-image fa-2x"></i><span style="margin-right:8px;">work${i}.jpg</span></div>`; };
+            img.onerror = function() { 
+                this.style.display = 'none'; 
+                this.parentNode.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;background:#e7d8c6;color:var(--primary-color);"><i class="fas fa-image fa-2x"></i><span style="margin-right:8px;">work${i}.jpg</span></div>`;
+            };
             item.appendChild(img);
             galleryGrid.appendChild(item);
         }
     }
+
+    // Lightbox لعرض الصور بتكبير
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    const closeLightbox = document.querySelector('.close-lightbox');
+    
+    document.querySelectorAll('.gallery-item img').forEach(img => {
+        img.addEventListener('click', (e) => {
+            e.stopPropagation();
+            lightboxImg.src = img.src;
+            lightbox.classList.add('active');
+        });
+    });
+    
+    function closeLightboxFunc() {
+        lightbox.classList.remove('active');
+    }
+    closeLightbox.addEventListener('click', closeLightboxFunc);
+    lightbox.addEventListener('click', (e) => {
+        if(e.target === lightbox) closeLightboxFunc();
+    });
 
     // آراء العملاء
     const testimonials = [
@@ -689,7 +732,7 @@
         });
     }
 
-    // خدمة واتساب للأزرار (تحديث الرقم الجديد)
+    // خدمة واتساب للأزرار
     document.querySelectorAll('.whatsapp-service').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
